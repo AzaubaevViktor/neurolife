@@ -51,7 +51,7 @@ class Creature:
         :return: instance создания
         """
 
-        in_layers = [12, 12] if in_layers is None else in_layers
+        in_layers = [11, 11] if in_layers is None else in_layers
         self.genome = Neuro([10] + in_layers + [11]) if genome is None else genome.copy()
         self.memory = 0
         self._life = life
@@ -66,9 +66,10 @@ class Creature:
 
     @life.setter
     def life(self, val):
-        if self.life > 1:
+        self._life = val
+        if self._life > 1:
             self._life = 1
-        elif self.life < 0:
+        elif self._life < 0:
             self._life = 0
 
     @property
@@ -97,5 +98,5 @@ class Creature:
         :param vision: list с описанием, видно ли что-то вокруг
         :return: набор выходящих значений для направлений, выбрасывать ли stalk
         """
-        self.life -= 0.001
+        self.life -= 0.00
         return self.genome.calc(vision + [self.life, self.memory])

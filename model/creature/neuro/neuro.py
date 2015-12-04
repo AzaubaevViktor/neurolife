@@ -5,7 +5,7 @@ import math
 
 
 class Neuro:
-    def __init__(self, *layers):
+    def __init__(self, layers):
         self.inp_size, *layers_sizes, self.out_size = layers
         self.layers = []
         for i in range(1, len(layers)):

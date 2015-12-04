@@ -1,9 +1,8 @@
 from random import randint
 from model.creature import Direction, Creature, Stalk
 
-
 class World:
-    def __init__(self, params):
+    def __init__(self, params={}):
         """
         self.creatures: {(x,y): object, ...}
         :param params: dict с параметрами
@@ -12,21 +11,24 @@ class World:
         self.creatures = {}
 
         creatures_params = params.get('creatures', {})
-        self.creatures_in_layer = creatures_params.get('in_layers', [11, 11])
-        self.creatures_count = creatures_params.get('count', 10)
-        self.move_penalty = creatures_params.get('move_penalty', 0.002)
-        self.fight_penalty_coef = creatures_params.get('fight_penalty_coef', 0.2)
-        self.eat = creatures_params.get('eat', 0.4)
+        self.creatures_in_layer = [int(x.rstrip().lstrip()) for x in creatures_params.get('in_layers', "11, 11").split(',')]
+        self.creatures_count = int(creatures_params.get('count', "100"))
+        self.move_penalty = float(creatures_params.get('move_penalty', "0.000"))
+        self.fight_penalty_coef = float(creatures_params.get('fight_penalty_coef', "0.2"))
+        self.eat = float(creatures_params.get('eat', "0.4"))
         self.layers_in = [int(x) for x in creatures_params.get('in_layers', "3,5").split(',')]
 
         world_param = params.get('world', {})
-        self.width = world_param.get('width', 50)
-        self.height = world_param.get('height', 20)
-        self.sun_size = world_param.get('sun_size', 10)
+        self.width = world_param.get('width', 500)
+        self.height = world_param.get('height', 400)
+        self.sun_size = world_param.get('sun_size', 100)
         self.sun_power = world_param.get('sun_power', 0.02)
-        self.sun_speed = world_param.get('sun_speed', 0.1)
+        self.sun_speed = world_param.get('sun_speed', 1)
         self.sun_x = (self.width - self.sun_size) / 2
         self.sun_y = (self.height - self.sun_size) / 2
+
+        for x in range(self.creatures_count):
+            self.create_creature()
         pass
 
     def get_obj(self, x, y):
@@ -90,14 +92,18 @@ class World:
                 if self._in_sun(x, y):
                     cr.life += self.sun_power
 
-                vision = [self.get_obj(x + Direction.coord(i)[0], y + Direction.coord(i)[1]) for i in range(9)]
+                vision = [
+                    0 if self.get_obj(x + Direction.coord(i)[0], y + Direction.coord(i)[1]) is None else 1 for i in range(9)]
                 direct, power, stalk = cr.step(vision)
 
                 if stalk:
                     while True:
-                        dx, dy = Direction.coord(randint(0,9))
+                        break
+                        dx, dy = Direction.coord(randint(0, 8))
+                        dx, dy = dx * 3, dy * 3
                         if self.get_obj(x + dx, y + dy) is None:
                             new_creatures[((x + dx) % self.width, (y + dy) % self.height)] = stalk
+                            break
 
                 dx, dy = direct.get_coord()
                 cell = self.get_obj(x + dx, y + dy)
@@ -123,6 +129,7 @@ class World:
         self.sun_y %= self.height
 
     def _attack(self, first: Creature, second: Creature, power):
+        return True
         if second.alive:
             second.life -= power * first.life
             first.life -= power * self.fight_penalty_coef
