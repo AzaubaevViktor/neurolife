@@ -6,18 +6,17 @@ import math
 
 class Neuro:
     def __init__(self, layers):
-        self.inp_size, *layers_sizes, self.out_size = layers
         self.layers = []
         for i in range(1, len(layers)):
             self.layers.append(Layer(layers[i-1], layers[i]))
 
-    def calc(self, inp):
+    def calc(self, inp: list):
         out = inp
         for layer in self.layers:
             out = layer.calc(out)
         return out
 
-    def mutate(self, probability, coef):
+    def mutate(self, probability: float, coef: float):
         for layer in self.layers:
             layer.mutate(probability, coef)
 

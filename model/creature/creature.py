@@ -42,7 +42,7 @@ class Stalk:
 
 
 class Creature:
-    def __init__(self, in_layers: list = None, genome: Neuro = None, life: int = 1):
+    def __init__(self, in_layers: list = None, genome: Neuro = None, life: float = 1):
         """
         Класс, описывающий создание
 

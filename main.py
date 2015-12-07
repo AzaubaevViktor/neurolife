@@ -1,6 +1,4 @@
 # импортирование модулей python
-import random
-from time import sleep
 from tkinter import *
 
 from model import World, Creature
