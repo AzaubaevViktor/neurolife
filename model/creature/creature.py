@@ -55,6 +55,7 @@ class Creature:
         self.genome = Neuro([10] + in_layers + [11]) if genome is None else genome.copy()
         self.memory = 0
         self._life = life
+        self.next_stalk = 10
 
     @classmethod
     def load_from_file(cls, filename):
@@ -78,9 +79,11 @@ class Creature:
 
     def step(self, vision: list) -> (Direction, int, Stalk):
         *directs, self.memory, create_stalk = self._calc(vision)
+        self.next_stalk -= 1
         stalk = None
-        if create_stalk:
+        if create_stalk > 0.5 and self.next_stalk < 0:
             stalk = self.create_stalk()
+            self.next_stalk = 10
         return Direction(directs.index(max(directs))), max(directs), stalk
 
     def create_stalk(self):

@@ -57,19 +57,28 @@ class GameScreen:
 
     def draw(self):
         # Сделать 4 солнца
-        self.canvas.create_rectangle(self.model.sun_x, self.model.sun_y,
-                                     self.model.sun_x + self.model.sun_size, self.model.sun_y + self.model.sun_size,
-                                     fill="yellow")
+        x, y = self.model.sun_x, self.model.sun_y
+        suns = [(x, y),
+                (x - self.model.width, y),
+                (x, y - self.model.height),
+                (x - self.model.width, y - self.model.height)]
+        for x, y in suns:
+            self.canvas.create_rectangle(x, y,
+                                         x + self.model.sun_size, y + self.model.sun_size,
+                                         fill="yellow")
 
         for coord, creature in self.model.creatures.items():
-            color ="#00{:0>2}00".format(
-                hex(int(creature.life * 255))[2:]
+            color = "#00{:0>2}00".format(
+                    hex(int(creature.life * 255))[2:]
             )
+            if len(color) > 7:
+                print("FFFFFUUUUUU")
+
             if isinstance(creature, Creature):
                 func = self.canvas.create_oval
             else:
                 func = self.canvas.create_rectangle
-            func(coord[0], coord[1], coord[0]+6, coord[1]+6, fill=color)
+            func(coord[0], coord[1], coord[0] + 6, coord[1] + 6, fill=color)
 
     def graphic_init(self):
         self.slave = Frame(self.master,
@@ -100,6 +109,7 @@ class GameScreen:
             self.model.step()
             self.draw()
             self.master.after(1, self.run)
+
 
 # создание окна
 root = Tk()
