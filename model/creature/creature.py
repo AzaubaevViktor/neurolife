@@ -26,7 +26,11 @@ class Direction(Enum):
 
 
 class Creature:
-    def __init__(self, in_layers: list = None, genome: Neuro = None, life: float = 1, mutate_param = None):
+    def __init__(self, in_layers: list = None,
+                 genome: Neuro = None,
+                 life: float = 1,
+                 burn_threshold = 0.8,
+                 mutate_param=None):
         """
         Класс, описывающий создание
 
@@ -35,6 +39,7 @@ class Creature:
         :return: instance создания
         """
 
+        self.burn_threshold = burn_threshold
         in_layers = [11, 11] if in_layers is None else in_layers
         self.genome = Neuro([9] + in_layers + [11]) if genome is None else genome.copy()
         self.memory = 0
@@ -66,7 +71,7 @@ class Creature:
         *directs, self.memory, create_stalk = self._calc(vision)
         self.next_stalk -= 1
         stalk = None
-        if create_stalk > 0.5 and self.next_stalk < 0:
+        if create_stalk > 0.5 and self.next_stalk < 0 and self.life > self.burn_threshold:
             stalk = self.create_stalk()
             self.next_stalk = 10
         return Direction(directs.index(max(directs))), max(directs), stalk
@@ -74,7 +79,8 @@ class Creature:
     def create_stalk(self):
         stalk_life = min(self.life, 0.3)
         self.life -= stalk_life
-        return Creature(genome=self.genome, life=stalk_life, mutate_param=self.mutate_param)
+        return Creature(genome=self.genome, life=stalk_life, mutate_param=self.mutate_param,
+                        burn_threshold=self.burn_threshold)
 
     def _calc(self, vision: list) -> (list, bool):
         """

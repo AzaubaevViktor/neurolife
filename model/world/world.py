@@ -11,6 +11,7 @@ default_params = {
         "move_penalty": ("0.001", float),
         "fight_penalty_coef": ("0.2", float),
         "eat": ("0.4", float),
+        "burn_threshold": (0.8, float)
     },
     "world": {
         "width": ("500", int),
@@ -41,6 +42,7 @@ class World:
         self.move_penalty = creatures_params['move_penalty']
         self.fight_penalty_coef = creatures_params['fight_penalty_coef']
         self.eat = creatures_params['eat']
+        self.burn_treshold = creatures_params['burn_threshold']
 
         world_param = params['world']
         self.width = world_param['width']
@@ -104,7 +106,7 @@ class World:
         Создаёт новое создание
         :return:
         """
-        self._add_object(Creature(self.creatures_in_layer))
+        self._add_object(Creature(self.creatures_in_layer, burn_threshold=self.burn_treshold))
 
     def step(self):
         # Обрабатываем созданий
