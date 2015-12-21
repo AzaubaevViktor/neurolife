@@ -1,20 +1,19 @@
-import pickle
 from tkinter import Frame, Button, Canvas, TOP, DISABLED, ACTIVE
 from tkinter import messagebox
 from tkinter.filedialog import asksaveasfilename
 
-from model import World
-from view.info_window import InfoWindow
+from controller import GameScreenController
+from .info_window import InfoWindow
 
 
 class GameScreen:
-    def __init__(self, master, params, world=None):
+    def __init__(self, master, params, model=None):
         self.master = master
 
-        if world:
-            world.init_param(params)
+        self.controller = GameScreenController(params, model=model)
 
-        self.model = world if world else World(params)
+        self.width = self.controller.model.width
+        self.height = self.controller.model.height
 
         self.graphic_init()
 
@@ -23,18 +22,19 @@ class GameScreen:
 
     def draw(self):
         # Сделать 4 солнца
-        x, y = self.model.sun_x, self.model.sun_y
+        model = self.controller.model
+        x, y = model.sun_x, model.sun_y
         suns = [(x, y),
-                (x - self.model.width, y),
-                (x, y - self.model.height),
-                (x - self.model.width, y - self.model.height)]
+                (x - self.width, y),
+                (x, y - self.height),
+                (x - self.width, y - self.height)]
         for x, y in suns:
             self.canvas.create_rectangle(max(0, x), max(0, y),
-                                         min(x + self.model.sun_size, self.model.width + 1),
-                                         min(y + self.model.sun_size, self.model.height + 1),
+                                         min(x + model.sun_size, self.width + 1),
+                                         min(y + model.sun_size, self.height + 1),
                                          fill="yellow")
 
-        for coord, creature in self.model.creatures.items():
+        for coord, creature in model.creatures.items():
             color = "#00{:0>2}00".format(
                     hex(int(creature.life * 255))[2:]
             )
@@ -85,8 +85,8 @@ class GameScreen:
 
         self.canvas = \
             Canvas(self.frame,
-                   width=self.model.width,
-                   height=self.model.height)
+                   width=self.width,
+                   height=self.height)
         self.canvas.pack(side=TOP)
 
         self.button_frame.pack()
@@ -95,30 +95,32 @@ class GameScreen:
 
     def start_stop_pressed(self):
         self.is_run = not self.is_run
+
         self.start_stop_button.config(
                 text='Пауза' if self.is_run else 'Старт')
         self.info_button.config(
                 state=DISABLED if self.is_run else ACTIVE
         )
+
         self.run()
 
     def save_pressed(self):
         filename = asksaveasfilename(title="Сохранить мир")
         if filename:
             try:
-                pickle.dump(self.model, open(filename, "wb"))
+                self.controller.save_pressed(filename)
             except Exception as e:
                 messagebox.showerror("Не удалось сохранить файл", str(e))
 
     def info_pressed(self):
-        top = InfoWindow(self.model)
+        InfoWindow(self.controller.model)
 
     def add_pressed(self):
-        self.model.create_creature()
+        self.controller.add_pressed()
 
     def run(self):
         if self.is_run:
             self.canvas.delete("all")
-            self.model.step()
+            self.controller.run()
             self.draw()
             self.master.after(1, self.run)

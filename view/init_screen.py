@@ -3,6 +3,7 @@ from tkinter import Frame, Button, Label, LEFT, Entry, StringVar
 
 from controller import InitScreenController
 from model import default_params, default_fields_count
+from .game_screen import GameScreen
 
 
 def _convert(text: str):
@@ -123,7 +124,12 @@ class InitScreen:
         return params
 
     def start_button_press(self):
-        self.controller.start_button_press(self._collect_params())
+        params = self._collect_params()
+
+        if self.controller.model:
+            self.game_screen = GameScreen(self.master, params, model=self.controller.model)
+        else:
+            self.game_screen = GameScreen(self.master, params)
 
         self.frame.forget()
 
