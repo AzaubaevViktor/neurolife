@@ -33,10 +33,10 @@ class GameScreen:
             if len(color) > 7:
                 print("FFFFFUUUUUU")
 
-            if isinstance(creature, Creature):
-                func = self.canvas.create_oval
-            else:
-                func = self.canvas.create_rectangle
+            if not creature.alive:
+                color = "red"
+
+            func = self.canvas.create_oval
             func(coord[0], coord[1], coord[0] + 6, coord[1] + 6, fill=color)
 
     def graphic_init(self):
