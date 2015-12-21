@@ -2,6 +2,28 @@ from random import randint
 from model.creature import Direction, Creature
 
 
+to_list = lambda x: [int(x) for x in x.split(",") if x]
+
+default_params = {
+    "creatures": {
+        'in_layers': ("10, 11", to_list),
+        "count": ("500", int),
+        "move_penalty": ("0.001", float),
+        "fight_penalty_coef": ("0.2", float),
+        "eat": ("0.4", float),
+    },
+    "world": {
+        "width": ("500", int),
+        "height": ("400", int),
+        "sun_size": ("200", int),
+        "sun_power": ("0.002", float),
+        "sun_speed": ("1", int)
+    }
+}
+
+default_fields_count = sum([len(default_params[key]) for key in default_params])
+
+
 class World:
     def __init__(self, params=None):
         """
@@ -13,20 +35,19 @@ class World:
 
         params = {} if params is None else params
 
-        creatures_params = params.get('creatures', {})
-        self.creatures_in_layer = [int(x.rstrip().lstrip()) for x in creatures_params.get('in_layers', "10, 11").split(',')]
-        self.creatures_count = int(creatures_params.get('count', "500"))
-        self.move_penalty = float(creatures_params.get('move_penalty', "0.001"))
-        self.fight_penalty_coef = float(creatures_params.get('fight_penalty_coef', "0.2"))
-        self.eat = float(creatures_params.get('eat', "0.4"))
-        self.layers_in = [int(x) for x in creatures_params.get('in_layers', "3,5").split(',')]
+        creatures_params = params['creatures']
+        self.creatures_in_layer = creatures_params['in_layers']
+        self.creatures_count = creatures_params['count']
+        self.move_penalty = creatures_params['move_penalty']
+        self.fight_penalty_coef = creatures_params['fight_penalty_coef']
+        self.eat = creatures_params['eat']
 
-        world_param = params.get('world', {})
-        self.width = world_param.get('width', 500)
-        self.height = world_param.get('height', 400)
-        self.sun_size = world_param.get('sun_size', 200)
-        self.sun_power = world_param.get('sun_power', 0.002)
-        self.sun_speed = world_param.get('sun_speed', 1)
+        world_param = params['world']
+        self.width = world_param['width']
+        self.height = world_param['height']
+        self.sun_size = world_param['sun_size']
+        self.sun_power = world_param['sun_power']
+        self.sun_speed = world_param['sun_speed']
         self.sun_x = (self.width - self.sun_size) / 2
         self.sun_y = (self.height - self.sun_size) / 2
 
