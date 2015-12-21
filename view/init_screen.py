@@ -1,12 +1,10 @@
+import pickle
 from copy import deepcopy
-from tkinter import Frame, Button, DISABLED, Text, Label, LEFT, Entry, messagebox, END, StringVar
+from tkinter import Frame, Button, Label, LEFT, Entry, messagebox, StringVar
 from tkinter.filedialog import askopenfilename
 
-import pickle
-
-from .game_screen import GameScreen
-
 from model import default_params, default_fields_count
+from .game_screen import GameScreen
 
 
 def _convert(text: str):

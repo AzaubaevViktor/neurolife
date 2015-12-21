@@ -1,8 +1,7 @@
-from tkinter import Frame, Button, BOTTOM, Canvas, TOP, LEFT, SE, NE, DISABLED, ACTIVE
-from tkinter.filedialog import asksaveasfilename
-from tkinter import messagebox
-
 import pickle
+from tkinter import Frame, Button, Canvas, TOP, DISABLED, ACTIVE
+from tkinter import messagebox
+from tkinter.filedialog import asksaveasfilename
 
 from model import World
 from view.info_window import InfoWindow
@@ -36,8 +35,6 @@ class GameScreen:
             color = "#00{:0>2}00".format(
                     hex(int(creature.life * 255))[2:]
             )
-            if len(color) > 7:
-                print("FFFFFUUUUUU")
 
             if not creature.alive:
                 color = "red"
