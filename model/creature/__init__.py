@@ -1,1 +1,1 @@
-from .creature import Direction, Creature, Stalk
+from .creature import Direction, Creature

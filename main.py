@@ -94,7 +94,6 @@ class GameScreen:
         self.canvas = Canvas(self.slave,
                              width=600,
                              height=400)
-        self.canvas.create_line(1, 1, 10, 20, 30, 40, 50, 60)
         self.canvas.pack(side=TOP)
 
         self.slave.pack()

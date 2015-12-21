@@ -1,4 +1,3 @@
-import random
 from enum import Enum
 from .neuro import Neuro
 
@@ -26,23 +25,8 @@ class Direction(Enum):
         return x[self.value]
 
 
-class Stalk:
-    def __init__(self, first_genome: Neuro, life):
-        self.genome = first_genome
-        self.life = life
-
-    def crossing(self, second_genome: Neuro):
-        self.genome.crossing(second_genome)
-
-    def mutate(self, probability, coef):
-        self.genome.mutate(probability, coef)
-
-    def generate_creature(self):
-        return Creature(None, genome=self.genome, life=self.life)
-
-
 class Creature:
-    def __init__(self, in_layers: list = None, genome: Neuro = None, life: float = 1):
+    def __init__(self, in_layers: list = None, genome: Neuro = None, life: float = 1, mutate_param = None):
         """
         Класс, описывающий создание
 
@@ -52,9 +36,10 @@ class Creature:
         """
 
         in_layers = [11, 11] if in_layers is None else in_layers
-        self.genome = Neuro([10] + in_layers + [11]) if genome is None else genome.copy()
+        self.genome = Neuro([9] + in_layers + [11]) if genome is None else genome.copy()
         self.memory = 0
         self._life = life
+        self.mutate_param = (0.2, 0.3) if mutate_param is None else mutate_param
         self.next_stalk = 10
 
     @classmethod
@@ -77,7 +62,7 @@ class Creature:
     def alive(self):
         return self.life > 0
 
-    def step(self, vision: list) -> (Direction, int, Stalk):
+    def step(self, vision: list) -> (Direction, int, object):
         *directs, self.memory, create_stalk = self._calc(vision)
         self.next_stalk -= 1
         stalk = None
@@ -89,12 +74,7 @@ class Creature:
     def create_stalk(self):
         stalk_life = min(self.life, 0.3)
         self.life -= stalk_life
-        return Stalk(self.genome, stalk_life)
-
-    def fertilization(self, stalk: Stalk):
-        self.life -= 0.3
-        stalk.life += 0.3
-        stalk.crossing(self.genome)
+        return Creature(genome=self.genome, life=stalk_life, mutate_param=self.mutate_param)
 
     def _calc(self, vision: list) -> (list, bool):
         """

@@ -1,5 +1,5 @@
 from random import randint
-from model.creature import Direction, Creature, Stalk
+from model.creature import Direction, Creature
 
 
 class World:
@@ -89,11 +89,7 @@ class World:
         # Обрабатываем созданий
         new_creatures = {}
         for (x, y), cr in self.creatures.items():
-            if isinstance(cr, Stalk):
-                new_creatures[x, y] = cr
-                continue
-
-            elif isinstance(cr, Creature):
+            if isinstance(cr, Creature):
                 if not cr.alive:
                     new_creatures[x, y] = cr
                     continue
@@ -120,9 +116,6 @@ class World:
                 if isinstance(cell, Creature):
                     if self._attack(cr, cell, power):
                         new_creatures[((x + dx) % self.width, (y + dy) % self.height)] = cell
-                elif isinstance(cell, Stalk):
-                    cr.fertilization(cell)
-                    new_creatures[((x + dx) % self.width, (y + dy) % self.height)] = cell.generate_creature()
                 else:
                     if cr.alive:
                         new_creatures[((x + dx) % self.width, (y + dy) % self.height)] = cr
@@ -140,7 +133,7 @@ class World:
     def _attack(self, first: Creature, second: Creature, power):
         if second.alive:
             second.life -= power * first.life
-            first.life -= power * self.fight_penalty_coef
+            first.life += power * first.life * (1 - self.fight_penalty_coef)
             return True
         else:
             first.life += self.eat
