@@ -1,6 +1,5 @@
-from random import randint
-
 import math
+from random import randint
 
 from model.creature import Direction, Creature
 
@@ -40,6 +39,14 @@ class World:
         params = {} if params is None else params
         self.params = params
 
+        self.init_param(params)
+
+    def init_param(self, params):
+        """
+        Переинициализирует при надобности параметры
+        :param params: dicr
+        :return:
+        """
         creatures_params = params['creatures']
         self.creatures_in_layer = creatures_params['in_layers']
         self.creatures_count = creatures_params['count']
@@ -58,7 +65,7 @@ class World:
         self.sun_x = (self.width - self.sun_size) / 2
         self.sun_y = (self.height - self.sun_size) / 2
 
-        for x in range(self.creatures_count):
+        for x in range(self.creatures_count - len(self.creatures)):
             self.create_creature()
         pass
 

@@ -12,7 +12,7 @@ class InitScreenController:
 
     def start_button_press(self, params):
         if self.model:
-            self.game_screen = GameScreen(self.master, None, world=self.model)
+            self.game_screen = GameScreen(self.master, params, world=self.model)
         else:
             self.game_screen = GameScreen(self.master, params)
 

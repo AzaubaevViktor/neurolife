@@ -11,6 +11,9 @@ class GameScreen:
     def __init__(self, master, params, world=None):
         self.master = master
 
+        if world:
+            world.init_param(params)
+
         self.model = world if world else World(params)
 
         self.graphic_init()
