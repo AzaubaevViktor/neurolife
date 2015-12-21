@@ -28,8 +28,8 @@ class GameScreen:
                 (x - self.model.width, y - self.model.height)]
         for x, y in suns:
             self.canvas.create_rectangle(max(0, x), max(0, y),
-                                         min(x + self.model.sun_size, self.model.width),
-                                         min(y + self.model.sun_size, self.model.height),
+                                         min(x + self.model.sun_size, self.model.width + 1),
+                                         min(y + self.model.sun_size, self.model.height + 1),
                                          fill="yellow")
 
         for coord, creature in self.model.creatures.items():
