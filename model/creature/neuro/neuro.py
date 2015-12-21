@@ -29,14 +29,14 @@ class Neuro:
 
 
 def sigmoid(x):
-    return 1./(1 + math.e ** (-x))
+    return 1./(1 + math.e ** (-x)) - 0.5
 
 
 class Layer:
     def __init__(self, size_left, size_right, parent=None):
         self.size_left = size_left
         self.size_right = size_right
-        self.weights = [[(random() - 0.5)/10 for x in range(size_left)] for y in range(size_right)] if parent is None else parent
+        self.weights = [[(random() - 0.5) for x in range(size_left)] for y in range(size_right)] if parent is None else parent
 
     def mutate(self, probability, coef):
         for x in range(self.size_left):
