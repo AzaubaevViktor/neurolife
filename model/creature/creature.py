@@ -26,13 +26,15 @@ class Direction(Enum):
 
 
 class Creature:
+    """
+    Создание
+    """
     def __init__(self, in_layers: list = None,
                  genome: Neuro = None,
                  life: float = 1,
                  burn_threshold = 0.8,
                  mutate_param=None):
         """
-        Класс, описывающий создание
 
         :param in_layers: Слои нейросети
         :param genome: Геном, который будет там
@@ -54,10 +56,19 @@ class Creature:
 
     @property
     def life(self):
+        """
+        Кол-во здоровья
+        :return: float
+        """
         return self._life
 
     @life.setter
     def life(self, val):
+        """
+        Устанавливает кол-во здоровья
+        :param val: float
+        :return:
+        """
         self._life = val
         if self._life > 1:
             self._life = 1
@@ -66,9 +77,18 @@ class Creature:
 
     @property
     def alive(self):
+        """
+        Проверка на то, что создание живо
+        :return: bool
+        """
         return self.life > 0
 
     def step(self, vision: list) -> (Direction, int, object):
+        """
+        Делает один шаг симуляции
+        :param vision: list
+        :return: (Direction, int, object)
+        """
         *directs, self.memory, create_stalk = self._calc(vision)
         self.next_stalk -= 1
         stalk = None
@@ -81,6 +101,10 @@ class Creature:
         return Direction(directs.index(max(directs))), max(directs), stalk
 
     def create_stalk(self):
+        """
+        Создаёт потомка
+        :return: Creature
+        """
         stalk_life = min(self.life, 0.3)
         self.life -= stalk_life
         return Creature(genome=self.genome, life=stalk_life, mutate_param=self.mutate_param,

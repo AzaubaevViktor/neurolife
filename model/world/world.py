@@ -71,18 +71,6 @@ class World:
         """
         return self.creatures.get((x % self.width, y % self.height), None)
 
-    def del_obj(self, x, y):
-        """
-        Удаляет объект по координате
-        :param x: Координата по x
-        :param y: Координата по y
-        :return:
-        """
-        try:
-            del self.creatures[(x % self.width, y % self.height)]
-        except KeyError:
-            pass
-
     def _add_object(self, creature):
         x = 0
         y = 0
@@ -232,6 +220,10 @@ class World:
             return False
 
     def info(self):
+        """
+        Возвращает информацию о мире
+        :return: dict
+        """
         _info = {
             'cr_count': len(self.creatures),
             'cr_alive': len([None for x in self.creatures.values() if x.alive])
