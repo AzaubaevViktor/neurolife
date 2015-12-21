@@ -1,10 +1,8 @@
-import pickle
 from copy import deepcopy
-from tkinter import Frame, Button, Label, LEFT, Entry, messagebox, StringVar
-from tkinter.filedialog import askopenfilename
+from tkinter import Frame, Button, Label, LEFT, Entry, StringVar
 
+from controller import InitScreenController
 from model import default_params, default_fields_count
-from .game_screen import GameScreen
 
 
 def _convert(text: str):
@@ -15,8 +13,8 @@ def _convert(text: str):
 class InitScreen:
     def __init__(self, master):
         self.funcs = {}
-        self.model = None
         self.master = master
+        self.controller = InitScreenController(master)
         self.master.title('parent')
         self.master.geometry('640x480+200+150')
 
@@ -125,25 +123,18 @@ class InitScreen:
         return params
 
     def start_button_press(self):
-        if self.model:
-            self.game_screen = GameScreen(self.master, None, world=self.model)
-        else:
-            params = self._collect_params()
-            self.game_screen = GameScreen(self.master, params)
+        self.controller.start_button_press(self._collect_params())
 
         self.frame.forget()
 
     def load_button_press(self):
-        filename = askopenfilename()
-        if filename:
-            try:
-                self.model = pickle.load(open(filename, "rb"))
-            except Exception as e:
-                messagebox.showerror("Не удалось открыть файл", str(e))
-                return False
-        self.creature_count.config(text=str(len(self.model.creatures)))
 
-        for block in self.model.params.values():
+        self.controller.load_button_press()
+
+        model = self.controller.model
+        self.creature_count.config(text=str(len(model.creatures)))
+
+        for block in model.params.values():
             for k, v in block.items():
                 if k == "in_layers":
                     v = ", ".join([str(x) for x in v])
