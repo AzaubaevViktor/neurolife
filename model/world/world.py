@@ -1,4 +1,7 @@
 from random import randint
+
+import math
+
 from model.creature import Direction, Creature
 
 to_list = lambda x: [int(x) for x in x.split(",") if x]
@@ -6,11 +9,12 @@ to_list = lambda x: [int(x) for x in x.split(",") if x]
 default_params = {
     "creatures": {
         'in_layers': ("10, 11", to_list),
-        "count": ("500", int),
+        "count": ("50", int),
         "move_penalty": ("0.001", float),
         "fight_penalty_coef": ("0.2", float),
         "eat": ("0.4", float),
-        "burn_threshold": (0.8, float)
+        "burn_threshold": ("0.8", float),
+        "vision_range": ("80", int)
     },
     "world": {
         "width": ("640", int),
@@ -43,6 +47,7 @@ class World:
         self.fight_penalty_coef = creatures_params['fight_penalty_coef']
         self.eat = creatures_params['eat']
         self.burn_treshold = creatures_params['burn_threshold']
+        self.vision_range = creatures_params['vision_range']
 
         world_param = params['world']
         self.width = world_param['width']
@@ -88,11 +93,20 @@ class World:
                 break
         self.creatures[(x, y)] = creature
 
-    def _in_sun(self, x, y):
-        coords = [(x, y),
-                  (x + self.width, y),
-                  (x, y + self.height),
-                  (x + self.width, y + self.height)]
+    def _get_four(self, coord):
+        """
+        Возвращает 4 координаты (ибо игровое поле -- тор)
+        :param coord:
+        :return:
+        """
+        x, y = coord
+        return [(x, y),
+                (x + self.width, y),
+                (x, y + self.height),
+                (x + self.width, y + self.height)]
+
+    def _in_sun(self, source_coord):
+        coords = self._get_four(source_coord)
 
         for coord in coords:
             if 0 < coord[0] - self.sun_x < self.sun_size and \
@@ -108,6 +122,51 @@ class World:
         """
         self._add_object(Creature(self.creatures_in_layer, burn_threshold=self.burn_treshold))
 
+    def _vector(self, first, second):
+        if first == second:
+            return 0, 0
+        _dist2dx = lambda dx, dy: dx*dx + dy*dy
+        dist2 = lambda _x1, _y1, _x2, _y2: _dist2dx((_x2 - _x1), (_y2 - _y1))
+        dist2c = lambda _first, _second: dist2(_first[0], _first[1], _second[0], _second[1])
+
+        fs = self._get_four(first)
+        ss = self._get_four(second)
+        d_min = dist2c(first, second)
+        phi_min = 0
+        min_coords = (first, second)
+
+        for f in fs:
+            for s in ss:
+                d = dist2c(f, s)
+                if d_min > d:
+                    min_coords = (f, s)
+                    d_min = d
+
+        #  Ищем угол
+        (x1, y1), (x2, y2) = min_coords
+        dx = x2 - x1
+        dy = y2 - y1
+
+        phi_min = math.atan2(dy, dx)
+
+        return math.sqrt(d_min), phi_min
+
+    def _create_vision(self, x, y):
+        vision = [0 for x in range(8)]
+        for coord, cr in self.creatures.items():
+            if (x, y) == coord:
+                continue
+
+            x2, y2 = coord
+            if min(abs(x2 - x), abs(y2 - y)) < self.vision_range:
+                d, phi = self._vector((x, y), coord)
+                if d > self.vision_range:
+                    continue
+
+                index = int(4 / math.pi * phi)
+                vision[index] = max(vision[index], 1 - d / self.vision_range)
+        return vision
+
     def step(self):
         # Обрабатываем созданий
         new_creatures = {}
@@ -117,13 +176,10 @@ class World:
                     new_creatures[x, y] = cr
                     continue
 
-                if self._in_sun(x, y):
+                if self._in_sun((x, y)):
                     cr.life += self.sun_power
 
-                vision = [
-                    0 if self.get_obj(x + Direction.coord(i)[0], y + Direction.coord(i)[1]) is None else 1 for i in
-                    range(9)]
-                vision = vision[:4] + vision[5:]
+                vision = self._create_vision(x, y)
                 direct, power, stalk = cr.step(vision)
 
                 if stalk:
