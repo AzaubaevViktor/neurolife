@@ -46,6 +46,7 @@ class Creature:
         self._life = life
         self.mutate_param = (0.2, 0.3) if mutate_param is None else mutate_param
         self.next_stalk = 10
+        self.in_world = True
 
     @classmethod
     def load_from_file(cls, filename):
@@ -71,7 +72,10 @@ class Creature:
         *directs, self.memory, create_stalk = self._calc(vision)
         self.next_stalk -= 1
         stalk = None
-        if create_stalk > 0.5 and self.next_stalk < 0 and self.life > self.burn_threshold:
+
+        av = sum(directs)/len(directs)
+
+        if create_stalk > av and self.next_stalk < 0 and self.life > self.burn_threshold:
             stalk = self.create_stalk()
             self.next_stalk = 10
         return Direction(directs.index(max(directs))), max(directs), stalk

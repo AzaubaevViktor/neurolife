@@ -172,8 +172,11 @@ class World:
         new_creatures = {}
         for (x, y), cr in self.creatures.items():
             if isinstance(cr, Creature):
+                if not cr.in_world:
+                    continue
+
                 if not cr.alive:
-                    new_creatures[x, y] = cr
+                    new_creatures[(x, y)] = cr
                     continue
 
                 if self._in_sun((x, y)):
@@ -191,15 +194,22 @@ class World:
                             break
 
                 dx, dy = direct.get_coord()
-                cell = self.get_obj(x + dx, y + dy)
+                cell = None
+                if dx != 0 != dy:
+                    cell = self.get_obj(x + dx, y + dy)
+
+                new_x = x + dx
+                new_y = y + dy
 
                 if isinstance(cell, Creature):
-                    if self._attack(cr, cell, power):
-                        new_creatures[((x + dx) % self.width, (y + dy) % self.height)] = cell
-                else:
-                    if cr.alive:
-                        new_creatures[((x + dx) % self.width, (y + dy) % self.height)] = cr
-                        cr.life -= self.move_penalty
+                    self._attack(cr, cell, power)
+                    new_x = x
+                    new_y = y
+
+                new_creatures[(new_x % self.width, new_y % self.height)] = cr
+
+                if cr.alive:
+                    cr.life -= self.move_penalty
 
         self.creatures = new_creatures
 
@@ -216,7 +226,9 @@ class World:
             first.life += power * first.life * (1 - self.fight_penalty_coef)
             return True
         else:
+            print("Съеден!")
             first.life += self.eat
+            second.in_world = False
             return False
 
     def info(self):
