@@ -68,6 +68,12 @@ class GameScreen:
                    state=DISABLED)
         self.info_button.pack(side=BOTTOM)
 
+        self.add_button = \
+            Button(self.slave,
+                   text="Добавить существо",
+                   command=self.add_pressed,)
+        self.add_button.pack(side=BOTTOM)
+
         self.canvas = \
             Canvas(self.slave,
                    width=self.model.width,
@@ -95,6 +101,9 @@ class GameScreen:
 
     def info_pressed(self):
         top = InfoWindow(self.model)
+
+    def add_pressed(self):
+        self.model.create_creature()
 
     def run(self):
         if self.is_run:
