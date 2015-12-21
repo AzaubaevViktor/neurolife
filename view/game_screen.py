@@ -46,41 +46,52 @@ class GameScreen:
             func(coord[0], coord[1], coord[0] + 6, coord[1] + 6, fill=color)
 
     def graphic_init(self):
-        self.slave = Frame(self.master,
+        self.frame = Frame(self.master,
                            bd=2)
 
+        self.button_frame = Frame(self.frame,
+                                  bd=2)
+        self.button_frame.grid_bbox(row=1,
+                                    column=4)
+
         self.start_stop_button = \
-            Button(self.slave,
+            Button(self.button_frame,
                    text="Пауза",
                    command=self.start_stop_pressed)
-        self.start_stop_button.pack(side=BOTTOM)
+        self.start_stop_button.grid(row=1,
+                                    column=2)
 
         self.save_button = \
-            Button(self.slave,
+            Button(self.button_frame,
                    text="Сохранить",
                    command=self.save_pressed)
-        self.save_button.pack(side=BOTTOM)
+        self.save_button.grid(row=1,
+                              column=1)
 
         self.info_button = \
-            Button(self.slave,
+            Button(self.button_frame,
                    text="Инфо",
                    command=self.info_pressed,
                    state=DISABLED)
-        self.info_button.pack(side=BOTTOM)
+        self.info_button.grid(row=1,
+                              column=4)
 
         self.add_button = \
-            Button(self.slave,
+            Button(self.button_frame,
                    text="Добавить существо",
-                   command=self.add_pressed,)
-        self.add_button.pack(side=BOTTOM)
+                   command=self.add_pressed, )
+        self.add_button.grid(row=1,
+                             column=3)
 
         self.canvas = \
-            Canvas(self.slave,
+            Canvas(self.frame,
                    width=self.model.width,
                    height=self.model.height)
         self.canvas.pack(side=TOP)
 
-        self.slave.pack()
+        self.button_frame.pack()
+
+        self.frame.pack()
 
     def start_stop_pressed(self):
         self.is_run = not self.is_run
