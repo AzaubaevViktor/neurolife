@@ -1,7 +1,5 @@
-import json
 from copy import deepcopy
 from tkinter import Frame, Button, DISABLED, Text, Label, LEFT, Entry
-from tkinter.filedialog import askopenfilename, asksaveasfilename
 
 from .game_screen import GameScreen
 

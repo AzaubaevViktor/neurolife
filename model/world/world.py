@@ -14,7 +14,7 @@ default_params = {
         "burn_threshold": (0.8, float)
     },
     "world": {
-        "width": ("500", int),
+        "width": ("640", int),
         "height": ("400", int),
         "sun_size": ("200", int),
         "sun_power": ("0.002", float),
