@@ -12,7 +12,7 @@ class GameScreen:
     def __init__(self, master, params, world=None):
         self.master = master
 
-        self.model = World(params)
+        self.model = world if world else World(params)
 
         self.graphic_init()
 

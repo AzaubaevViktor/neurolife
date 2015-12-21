@@ -127,9 +127,12 @@ class InitScreen:
         return params
 
     def start_button_press(self):
-        params = self._collect_params()
+        if self.model:
+            self.game_screen = GameScreen(self.master, None, world=self.model)
+        else:
+            params = self._collect_params()
+            self.game_screen = GameScreen(self.master, params)
 
-        self.game_screen = GameScreen(self.master, params)
         self.frame.forget()
 
     def load_button_press(self):
