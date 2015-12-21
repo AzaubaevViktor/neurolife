@@ -24,23 +24,23 @@ class InitScreen:
 
         self.set_param_init()
 
-        self.set_param_frame.pack()
+        self.frame.pack()
 
         self.master.mainloop()
 
     def set_param_init(self):
-        self.set_param_frame = Frame(width=400, height=300, bd=2)
-        self.set_param_frame.grid_bbox(2, 4 + default_fields_count)
+        self.frame = Frame(width=400, height=300, bd=2)
+        self.frame.grid_bbox(2, 4 + default_fields_count)
 
         self._buttons_init()
 
         self.entrys = {}
-        _vcmd = self.set_param_frame.register(self._validate)
+        _vcmd = self.frame.register(self._validate)
 
         count = 0
 
         for block_name, block in default_params.items():
-            Label(self.set_param_frame,
+            Label(self.frame,
                   text=_convert(block_name),
                   background="#999",
                   justify=LEFT).grid(
@@ -52,7 +52,7 @@ class InitScreen:
             for name, _default in block.items():
                 default, func = _default
 
-                Label(self.set_param_frame,
+                Label(self.frame,
                       text=_convert(name),
                       justify=LEFT).grid(
                         row=count,
@@ -61,7 +61,7 @@ class InitScreen:
                 # self.entrys[_convert(name)] = ""
                 sv = StringVar(
                         value=default_params[block_name][name][0])
-                e = Entry(self.set_param_frame)
+                e = Entry(self.frame)
 
                 self.entrys[name] = sv
                 self.funcs[e] = func
@@ -72,11 +72,9 @@ class InitScreen:
                 e.grid(row=count,
                        column=2)
 
-
-
                 count += 1
 
-        Label(self.set_param_frame,
+        Label(self.frame,
               text="Количество существ:",
               justify=LEFT).grid(
                 row=count,
@@ -84,7 +82,7 @@ class InitScreen:
         )
 
         self.creature_count = \
-            Label(self.set_param_frame,
+            Label(self.frame,
                   text='0',
                   justify=LEFT)
         self.creature_count.grid(
@@ -93,13 +91,13 @@ class InitScreen:
         )
 
     def _buttons_init(self):
-        self.load_button = Button(self.set_param_frame,
+        self.load_button = Button(self.frame,
                                   text='Загрузить',
                                   command=self.load_button_press)
         self.load_button.grid(row=4 + default_fields_count,
                               column=1)
 
-        self.start_button = Button(self.set_param_frame,
+        self.start_button = Button(self.frame,
                                    text='Старт',
                                    command=self.start_button_press)
         self.start_button.grid(row=4 + default_fields_count,
@@ -109,7 +107,7 @@ class InitScreen:
                              self.exit)
 
     def _validate(self, P, W):
-        e = self.set_param_frame.nametowidget(W)
+        e = self.frame.nametowidget(W)
         func = self.funcs[e]
 
         try:
@@ -132,7 +130,7 @@ class InitScreen:
         params = self._collect_params()
 
         self.game_screen = GameScreen(self.master, params)
-        self.set_param_frame.forget()
+        self.frame.forget()
 
     def load_button_press(self):
         filename = askopenfilename()

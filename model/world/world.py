@@ -1,7 +1,6 @@
 from random import randint
 from model.creature import Direction, Creature
 
-
 to_list = lambda x: [int(x) for x in x.split(",") if x]
 
 default_params = {
@@ -122,7 +121,8 @@ class World:
                     cr.life += self.sun_power
 
                 vision = [
-                    0 if self.get_obj(x + Direction.coord(i)[0], y + Direction.coord(i)[1]) is None else 1 for i in range(9)]
+                    0 if self.get_obj(x + Direction.coord(i)[0], y + Direction.coord(i)[1]) is None else 1 for i in
+                    range(9)]
                 vision = vision[:4] + vision[5:]
                 direct, power, stalk = cr.step(vision)
 
@@ -163,10 +163,9 @@ class World:
             first.life += self.eat
             return False
 
-
-
-
-
-
-
-
+    def info(self):
+        _info = {
+            'cr_count': len(self.creatures),
+            'cr_alive': len([None for x in self.creatures.values() if x.alive])
+        }
+        return _info

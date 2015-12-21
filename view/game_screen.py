@@ -1,10 +1,12 @@
-from tkinter import Frame, Button, BOTTOM, Canvas, TOP
+from tkinter import Frame, Button, BOTTOM, Canvas, TOP, LEFT, SE, NE, DISABLED, ACTIVE
 from tkinter.filedialog import asksaveasfilename
 from tkinter import messagebox
 
 import pickle
 
 from model import World
+from view.info_window import InfoWindow
+
 
 class GameScreen:
     def __init__(self, master, params, world=None):
@@ -47,19 +49,29 @@ class GameScreen:
         self.slave = Frame(self.master,
                            bd=2)
 
-        self.start_stop_button = Button(self.slave,
-                                        text="Пауза",
-                                        command=self.start_stop_pressed)
+        self.start_stop_button = \
+            Button(self.slave,
+                   text="Пауза",
+                   command=self.start_stop_pressed)
         self.start_stop_button.pack(side=BOTTOM)
 
-        self.save_button = Button(self.slave,
-                                  text="Сохранить",
-                                  command=self.save_pressed)
+        self.save_button = \
+            Button(self.slave,
+                   text="Сохранить",
+                   command=self.save_pressed)
         self.save_button.pack(side=BOTTOM)
 
-        self.canvas = Canvas(self.slave,
-                             width=self.model.width,
-                             height=self.model.height)
+        self.info_button = \
+            Button(self.slave,
+                   text="Инфо",
+                   command=self.info_pressed,
+                   state=DISABLED)
+        self.info_button.pack(side=BOTTOM)
+
+        self.canvas = \
+            Canvas(self.slave,
+                   width=self.model.width,
+                   height=self.model.height)
         self.canvas.pack(side=TOP)
 
         self.slave.pack()
@@ -68,6 +80,9 @@ class GameScreen:
         self.is_run = not self.is_run
         self.start_stop_button.config(
                 text='Пауза' if self.is_run else 'Старт')
+        self.info_button.config(
+                state=DISABLED if self.is_run else ACTIVE
+        )
         self.run()
 
     def save_pressed(self):
@@ -77,6 +92,9 @@ class GameScreen:
                 pickle.dump(self.model, open(filename, "wb"))
             except Exception as e:
                 messagebox.showerror("Не удалось сохранить файл", str(e))
+
+    def info_pressed(self):
+        top = InfoWindow(self.model)
 
     def run(self):
         if self.is_run:
