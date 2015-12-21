@@ -35,6 +35,7 @@ class World:
         self.creatures = {}
 
         params = {} if params is None else params
+        self.params = params
 
         creatures_params = params['creatures']
         self.creatures_in_layer = creatures_params['in_layers']

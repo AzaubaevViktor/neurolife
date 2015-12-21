@@ -7,7 +7,7 @@ import pickle
 from model import World
 
 class GameScreen:
-    def __init__(self, master, params):
+    def __init__(self, master, params, world=None):
         self.master = master
 
         self.model = World(params)

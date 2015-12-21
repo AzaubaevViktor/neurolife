@@ -1,5 +1,8 @@
 from copy import deepcopy
-from tkinter import Frame, Button, DISABLED, Text, Label, LEFT, Entry
+from tkinter import Frame, Button, DISABLED, Text, Label, LEFT, Entry, messagebox, END, StringVar
+from tkinter.filedialog import askopenfilename
+
+import pickle
 
 from .game_screen import GameScreen
 
@@ -14,6 +17,7 @@ def _convert(text: str):
 class InitScreen:
     def __init__(self, master):
         self.funcs = {}
+        self.model = None
         self.master = master
         self.master.title('parent')
         self.master.geometry('640x480+200+150')
@@ -26,11 +30,11 @@ class InitScreen:
 
     def set_param_init(self):
         self.set_param_frame = Frame(width=400, height=300, bd=2)
-        self.set_param_frame.grid_bbox(2, 3 + default_fields_count)
+        self.set_param_frame.grid_bbox(2, 4 + default_fields_count)
 
         self._buttons_init()
 
-        self.texts = {}
+        self.entrys = {}
         _vcmd = self.set_param_frame.register(self._validate)
 
         count = 0
@@ -54,32 +58,51 @@ class InitScreen:
                         row=count,
                         column=1
                 )
-                self.texts[_convert(name)] = ""
-                e = Entry(self.set_param_frame,
-                          validate='key',
-                          vcmd=(_vcmd, "%P", "%W"))
+                # self.entrys[_convert(name)] = ""
+                sv = StringVar(
+                        value=default_params[block_name][name][0])
+                e = Entry(self.set_param_frame)
+
+                self.entrys[name] = sv
+                self.funcs[e] = func
+
+                e.config(validate='key',
+                         vcmd=(_vcmd, "%P", "%W"),
+                         textvariable=sv)
                 e.grid(row=count,
                        column=2)
 
-                self.texts[name] = e
-                self.funcs[e] = func
 
-                e.insert(0, default_params[block_name][name][0])
 
                 count += 1
+
+        Label(self.set_param_frame,
+              text="Количество существ:",
+              justify=LEFT).grid(
+                row=count,
+                column=1
+        )
+
+        self.creature_count = \
+            Label(self.set_param_frame,
+                  text='0',
+                  justify=LEFT)
+        self.creature_count.grid(
+                row=count,
+                column=2
+        )
 
     def _buttons_init(self):
         self.load_button = Button(self.set_param_frame,
                                   text='Загрузить',
-                                  state=DISABLED,
                                   command=self.load_button_press)
-        self.load_button.grid(row=3 + default_fields_count,
+        self.load_button.grid(row=4 + default_fields_count,
                               column=1)
 
         self.start_button = Button(self.set_param_frame,
                                    text='Старт',
                                    command=self.start_button_press)
-        self.start_button.grid(row=3 + default_fields_count,
+        self.start_button.grid(row=4 + default_fields_count,
                                column=2)
 
         self.master.protocol('WM_DELETE_WINDOW',
@@ -101,7 +124,7 @@ class InitScreen:
         for block in params.values():
             for key in block:
                 func = block[key][1]
-                block[key] = func(self.texts[key].get())
+                block[key] = func(self.entrys[key].get())
 
         return params
 
@@ -112,7 +135,20 @@ class InitScreen:
         self.set_param_frame.forget()
 
     def load_button_press(self):
-        pass
+        filename = askopenfilename()
+        if filename:
+            try:
+                self.model = pickle.load(open(filename, "rb"))
+            except Exception as e:
+                messagebox.showerror("Не удалось открыть файл", str(e))
+                return False
+        self.creature_count.config(text=str(len(self.model.creatures)))
+
+        for block in self.model.params.values():
+            for k, v in block.items():
+                if k == "in_layers":
+                    v = ", ".join([str(x) for x in v])
+                self.entrys[k].set(v)
 
     def exit(self):
         exit()
