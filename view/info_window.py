@@ -16,12 +16,12 @@ class InfoWindow:
         self.window.title('Информация об объектах и мире')
         self.window.geometry("640x600+250+200")
 
-        self.inner_init()
+        self._inner_init()
         self.frame.pack()
 
         self.window.mainloop()
 
-    def inner_init(self):
+    def _inner_init(self):
         self.frame = Frame(self.window,
                            width=640,
                            height=600,
